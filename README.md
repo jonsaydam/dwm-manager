@@ -17,4 +17,6 @@
 
 6. Copy alacritty directory to .config
 
+7. Instlal Awesome Fonts
+
 Enjoy!
