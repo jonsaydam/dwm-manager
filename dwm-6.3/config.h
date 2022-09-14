@@ -1,12 +1,13 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int borderpx  = 3;        /* border pixel of windows */
+static const unsigned int borderpx  = 5;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
+static const int swallowfloating    = 0;
 static const unsigned int gappih    = 10;       /* horiz inner gap between windows */
 static const unsigned int gappiv    = 10;       /* vert inner gap between windows */
-static const unsigned int gappoh    = 10;       /* horiz outer gap between windows and screen edge */
-static const unsigned int gappov    = 10;       /* vert outer gap between windows and screen edge */
+static const unsigned int gappoh    = 12;       /* horiz outer gap between windows and screen edge */
+static const unsigned int gappov    = 12;       /* vert outer gap between windows and screen edge */
 static       int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
 static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 static const unsigned int systrayspacing = 2;   /* systray spacing */
@@ -15,19 +16,37 @@ static const int showsystray        = 1;        /* 0 means no systray */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int attachmode         = 1;        /* 0 master (default), 1 = above, 2 = aside, 3 = below, 4 = bottom */
-static const char *fonts[]          = { "FontAwesome:pixelsize=20:antialias=true:autohint=true" };
-static const char dmenufont[]       = "monospace:size=14";
+//static const char *fonts[]          = { "monospace:size=10" };
+static const char *fonts[]          = { "Lato:regular:pixelsize=22:antialias=true:autohint=true","Iosevka Nerd Font:pixelsize=22:antialias=true:autohint=true" };
+static const char dmenufont[]       = "monospace:size=16";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
 static const char col_gray4[]       = "#eeeeee";
 static const char col_gray5[]       = "#ebc53f";
+//static const char col_cyan[]        = "#fc6203";
 static const char col_cyan[]        = "#8d1b9e";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
 	[SchemeSel]  = { col_gray4, col_cyan,  col_gray5  },
 };
+
+typedef struct {
+       const char *name;
+       const void *cmd;
+} Sp;
+//const char *spcmd1[] = {"st", "-n", "spterm", "-g", "120x34", NULL };
+const char *spcmd1[] = {"alacritty", "--class", "spterm1", "--config-file", "/home/alex/.config/alacritty/alacritty-scratch.yml", NULL };
+const char *spcmd2[] = {"alacritty", "--class", "spterm2", "--config-file", "/home/alex/.config/alacritty/alacritty-scratch.yml", "-e", "ncmpcpp", NULL };
+const char *spcmd3[] = {"keepassxc", NULL };
+static Sp scratchpads[] = {
+       /* name          cmd  */
+       {"spterm1",     spcmd1},
+       {"spterm2",     spcmd2},
+       {"keepassxc",   spcmd3},
+};
+
 
 /* tagging */
 //static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
@@ -40,12 +59,14 @@ static const Rule rules[] = {
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
         { "vlc",                NULL,       NULL,       1 << 5,            1,           -1 },
-        { "Thunar",             NULL,       NULL,       1 << 4,            0,           -1 },
-        { "firefox",            NULL,       NULL,       1 << 2,            0,           -1 },
         { "TelegramDesktop",    NULL,       NULL,       1 << 3,            0,           -1 },
-        { "VirtualBox Manager", NULL,       NULL,       1 << 8,            0,           -1 },
-        { "Pcmanfm",            NULL,       NULL,       1 << 4,            0,           -1 },
-        { "Emacs",              NULL,       NULL,       1 << 5,            0,           -1 },
+        { "Virt-manager",       NULL,       NULL,       1 << 8,            0,           -1 },
+        { "zoom",               NULL,       NULL,       1 << 9,            0,           -1 },
+        { "Pcmanfm",            NULL,       NULL,       1 << 4,            1,           -1 },
+        { "firefox",            NULL,       NULL,       1 << 2,            0,           -1 },
+        { NULL,                 "spterm1",  NULL,       SPTAG(0),          1,           -1 },
+        { NULL,                 "spterm2",  NULL,       SPTAG(1),          1,           -1 },
+        { NULL,                 "keec",     NULL,       SPTAG(2),          0,           -1 },
 };
 
 /* layout(s) */
@@ -98,6 +119,7 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray5, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { "alacritty", NULL };
 
+
 static Key keys[] = {
 	/* modifier                     key        function        argument */
         { 0,                            XF86XK_AudioLowerVolume, spawn, {.v = downvol } },
@@ -148,6 +170,9 @@ static Key keys[] = {
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+        { MODKEY,                       XK_y,      togglescratch,  {.ui = 0 } },
+        { MODKEY,                       XK_u,      togglescratch,  {.ui = 1 } },
+        { MODKEY,                       XK_x,      togglescratch,  {.ui = 2 } },
         { MODKEY,                       XK_n,      shiftview,      {.i = +1 } },
         { MODKEY|ShiftMask,             XK_n,      shiftview,      {.i = -1 } },
         { MODKEY|ControlMask,           XK_comma,  cyclelayout,    {.i = -1 } },
