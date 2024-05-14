@@ -1,0 +1,46 @@
+import = [
+  "/usr/lib/node_modules/alacritty-themes/themes/Ayu-Dark.toml"
+]
+
+[colors.primary]
+background = "#282a36"
+foreground = "#f8f8f2"
+
+[colors.cursor]
+cursor = "#528bff"
+text = "CellBackground"
+
+[cursor]
+style = "Block"
+
+[font]
+size = 16
+
+  [font.bold]
+  family = "JetBrains  Mono"
+  style = "Bold"
+
+  [font.bold_italic]
+  family = "JetBrains Mono"
+  style = "Bold Italic"
+
+  [font.italic]
+  family = "JetBrains Mono"
+  style = "Italic"
+
+  [font.normal]
+  family = "JetBrains Mono"
+  style = "Regular"
+
+  [font.offset]
+  x = 0
+  y = 0
+
+[[keyboard.bindings]]
+action = "PasteSelection"
+key = "V"
+mods = "Control"
+
+[window]
+decorations = "full"
+opacity = 0.9
