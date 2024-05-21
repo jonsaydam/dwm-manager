@@ -132,9 +132,9 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "/home/alex/bin/rdmenu.sh", NULL };
+static const char *dmenucmd[] = { "/home/saydam/bin/rdmenu.sh", NULL };
 static const char *termcmd[]  = { "alacritty", NULL };
-static const char *lockcmd[]  = { "/home/alex/bin/lock", NULL };
+static const char *lockcmd[]  = { "/home/saydam/bin/lock", NULL };
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
